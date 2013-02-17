@@ -73,8 +73,12 @@ package com.bradsbytes.tmx
 			}
 		}
 		
+		override flash_proxy function getProperty(n:*) : * {
+			return _layers[n];
+		}
+		
 		override flash_proxy function nextNameIndex(index:int):int {
-			if (index > _layers.length)
+			if (index >= _layers.length)
 				return 0;
 			return index + 1;
 		}

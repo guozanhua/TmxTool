@@ -10,6 +10,7 @@ package com.bradsbytes.tmx
 		public function AbstractTMXObject()
 		{
 			_properties = new ObjectProxy;
+			_properties.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, handlePropertyChanged);
 		}
 		
 		/**

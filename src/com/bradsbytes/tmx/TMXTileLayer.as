@@ -1,5 +1,9 @@
 package com.bradsbytes.tmx
 {
+	import flash.display.BitmapData;
+	import flash.geom.Matrix;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	/**
 	 * Represents a tile layer from the .tmx file.
 	 * 
@@ -114,6 +118,89 @@ package com.bradsbytes.tmx
 			// Save the size
 			_width = newWidth;
 			_height = newHeight;
+		}
+		
+		/**
+		 * Draws a portion of the layer onto a given BitmapData object.
+		 * 
+		 * <p>The layer must be inside a TMX for this to work.</p>
+		 * 
+		 * <p>The sourceRect parameter only specifies the area of the layer that will be drawn. It
+		 * does NOT specify the exact area of the destination bitmap data that will be affected. That
+		 * will depend on which cells within the layer intersect the given source rectangle. Even if
+		 * a cell is only partially inside the rectangle, the whole tile for that cell will be drawn.
+		 * As a result, the area of the destination bitmap that is affected by the draw will often
+		 * be larger than the given source rectangle. This behavior is intentional as it decreases
+		 * the complexity of drawing calculations and allows for oversized tiles to be drawn easily.</p>
+		 * <p>Note that the drawing method currently assumes that the TMX is in orthogonal orientation,
+		 * regardless of what the TMX's XML actually says. No support for other orientations is currently
+		 * being planned.</p>
+		 * 
+		 * @param dest The destination bitmap data onto which the layer will be drawn.
+		 * @param destPoint The position within the destination bitmap to draw the bitmap data.
+		 * @param sourceRect The source area of the layer to draw measured in pixels.
+		 */
+		public function draw(dest : BitmapData, destPoint : Point, sourceRect : Rectangle) : void {
+			
+			// Do not draw if there is no TMX.
+			if (tmx === null)
+				throw new ReferenceError("The layer cannot be drawn because it is not inside a TMX.");
+			
+			// Cache some unchanging values
+			var cellW : int = tmx.tileWidth;
+			var cellH : int = tmx.tileHeight;
+				
+			// Convert the given pixel coordinates into grid locations.
+			var gridLeft : int = sourceRect.left / cellW;
+			var gridTop : int = sourceRect.top / cellH;
+			var gridRight : int = Math.ceil(sourceRect.right / cellW);
+			var gridBottom : int = Math.ceil(sourceRect.bottom / cellH);
+			
+			// Flip edges if necessary.
+			var tmpEdge : int;
+			if (gridLeft > gridRight) {
+				tmpEdge = gridLeft;
+				gridLeft = gridRight
+				gridRight = tmpEdge;
+			}
+			if (gridTop > gridBottom) {
+				tmpEdge = gridTop;
+				gridTop = gridBottom;
+				gridBottom = tmpEdge;
+			}
+			
+			// Bound the edges.
+			gridLeft = Math.max(Math.min(width - 1, gridLeft), 0);
+			gridTop = Math.max(Math.min(height - 1, gridTop), 0);
+			gridRight = Math.max(Math.min(width - 1, gridRight), 0);
+			gridBottom = Math.max(Math.min(height - 1, gridBottom), 0);
+			
+			// Get the size of the drawn area.
+			var gridW : int = gridRight - gridLeft + 1;
+			var gridH : int = gridBottom - gridTop + 1;
+			
+			// Determine the pixel offsets caused by the source rectangle-to-cell intersections
+			var deltaX : int = sourceRect.left - (gridLeft * cellW);
+			var deltaY : int = sourceRect.top - (gridTop * cellH);
+			
+			// Used to position tiles when draw() method is used
+			var mat : Matrix = new Matrix;
+			
+			// Draw the cells one by one.
+			for (var row : uint = 0; row < gridH; row++) {
+				for (var col : uint = 0; col < gridW; col++) {
+					var tile : TMXTile = getTile(col + gridLeft, row + gridTop);
+					// Don't draw if the cell is empty.
+					if (tile !== null)
+						tile.draw(
+							dest,
+							new Point(
+								destPoint.x + (col * cellW) - deltaX,
+								destPoint.y + (row * cellH) - deltaY
+							)
+						);
+				}
+			}
 		}
 	}
 

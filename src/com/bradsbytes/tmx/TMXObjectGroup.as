@@ -1,7 +1,12 @@
 package com.bradsbytes.tmx
 {
+	import flash.display.BitmapData;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.utils.Proxy;
 	import flash.utils.flash_proxy;
+	
+	import spark.primitives.Rect;
 
 	use namespace flash_proxy;
 	
@@ -26,6 +31,7 @@ package com.bradsbytes.tmx
 	public class TMXObjectGroup extends AbstractTMXLayer
 	{	
 		protected var _objects : Vector.<TMXObject>;
+		protected var _color : uint = 0x00000000;
 		
 		public function TMXObjectGroup(name_ : String, width_ : uint, height_ : uint) 
 		{
@@ -74,9 +80,42 @@ package com.bradsbytes.tmx
 			else
 				throw new ArgumentError("object is already a member of a group.");
 		}
+		
+		/**
+		 * The color of objects in this objectgroup. This is used by objects that do not have a tile associated with them. 
+		 */
+		public function get color() : uint {
+			return _color;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set color(c:uint) : void {
+			_color = c;
+		}
+		
+		/**
+		 * Draw all objects on the layer that lie within the given source rectangle.
+		 * 
+		 * <p>The whole object will be drawn, even if the object is not completely inside the rectangle.</p>
+		 * 
+		 * @param dest The bitmap data onto which the objects will be drawn.
+		 * @param destPoint The position within the destination bitmap onto which the objects will be drawn.
+		 * @param sourceRect The region of space (measured in pixels) from which to draw objects.
+		 * @param shapeOpacity The opacity of shapes drawn by objects that do not have tiles associated with them.
+		 *                     (This is multiplied by the opacity of the object group itself.) 
+		 */
+		public function draw(dest:BitmapData, destPoint:Point, sourceRect:Rectangle, shapeOpacity:Number = 0.0) : void {
+			// TODO: Make things draw!
+		}
+		
+		override flash_proxy function getProperty(n:*) : * {
+			return _objects[n];
+		}
 
 		override flash_proxy function nextNameIndex(index:int):int {
-			if (index > _objects.length)
+			if (index >= _objects.length)
 				return 0;
 			return index + 1;
 		}
@@ -88,7 +127,6 @@ package com.bradsbytes.tmx
 		override flash_proxy function nextValue(index:int):* {
 			return _objects[index - 1];
 		}
-		
 	}
 
 }

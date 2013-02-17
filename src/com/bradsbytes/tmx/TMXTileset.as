@@ -181,12 +181,11 @@ package com.bradsbytes.tmx
 		}
 		
 		override flash_proxy function getProperty(n : *) : * {
-			if (!(n is int))
-			return _tiles[n as int];
+			return _tiles[n];
 		}
 		
 		override flash_proxy function nextNameIndex(index:int):int {
-			if (index > _tiles.length)
+			if (index >= _tiles.length)
 				return 0;
 			return index + 1;
 		}

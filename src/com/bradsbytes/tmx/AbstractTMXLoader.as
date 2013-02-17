@@ -10,8 +10,6 @@ package com.bradsbytes.tmx
 	import flash.events.EventDispatcher;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import flash.sampler.NewObjectSample;
-	import flash.utils.*;
 	import flash.utils.ByteArray;
 	import flash.utils.Endian;
 	
@@ -76,7 +74,7 @@ package com.bradsbytes.tmx
 		/**
 		 * Create a new TMX from an XML object.
 		 * 
-		 * <p>When the process is completed, the <code>complete</code> event will be triggered.</p>
+		 * <p>When the process is completed, the <code>Event.COMPLETE</code> event will be triggered.</p>
 		 * 
 		 * @param	xml
 		 * @return
@@ -99,9 +97,10 @@ package com.bradsbytes.tmx
 			}
 			
 			// Get the layers
-			for each (var layerXML : XML in xml) {
-				var tmxLayer : AbstractTMXLayer;
-				switch (String(layerXML.localName())) {
+			for each (var layerXML : XML in xml.children()) {
+				var tmxLayer : AbstractTMXLayer = null;
+				var tagname : String = String(layerXML.localName());
+				switch (tagname) {
 					
 					// Tile layers
 					case "layer":
@@ -114,7 +113,8 @@ package com.bradsbytes.tmx
 					break;
 				}
 				// Add the layer
-				tmx.layers.push(tmxLayer);
+				if (tmxLayer !== null)
+					tmx.layers.push(tmxLayer);
 			}
 			
 			dispatchEvent(new Event(Event.COMPLETE));
@@ -177,7 +177,8 @@ package com.bradsbytes.tmx
 			
 			// Read and set properties for each tile
 			for each (var tileXML : XML in tilesetXML.tile) {
-				var tmxTile : TMXTile = tmxTileset[uint(tileXML.@id)];
+				var tileIndex : int = uint(tileXML.@id);
+				var tmxTile : TMXTile = tmxTileset[tileIndex];
 				for each (var tilePropsXML : XML in tileXML.properties.property)
 				tmxTile.properties[tilePropsXML.@name] = String(tilePropsXML.@value);
 			}
@@ -213,7 +214,7 @@ package com.bradsbytes.tmx
 			}
 			
 			// Populate the layer with tiles
-			var data : Vector.<uint> = createTileLayerData(layerXML.data, layerXML, xml);
+			var data : Vector.<uint> = createTileLayerData(layerXML.data[0], layerXML, xml);
 			var index : uint = 0;
 			for (var row : uint = 0; row < tmxLayer.height; row++) {
 				for (var col : uint = 0; col < tmxLayer.width; col++) {
@@ -279,6 +280,7 @@ package com.bradsbytes.tmx
 							// the decompressed bytes
 							var bytesC : ByteArray = bytes;
 							bytes = new ByteArray;
+							bytes.endian = Endian.LITTLE_ENDIAN;
 							
 							// Use ZLib-From-Scratch to decompress the data
 							var decomp : ZlibDecoder = new ZlibDecoder;
@@ -303,6 +305,7 @@ package com.bradsbytes.tmx
 					}
 					
 					// Convert the BytesArray into a vector of uints
+					bytes.position = 0;
 					while (bytes.bytesAvailable > 0)
 						data.push(bytes.readUnsignedInt());
 				break;
@@ -336,6 +339,7 @@ package com.bradsbytes.tmx
 			// Get object group properties
 			for each (var ogroupPropXML : XML in layerXML.properties.property) {
 				tmxObjGroup.properties[String(ogroupPropXML.@name)] = String(ogroupPropXML.@value);
+				// TODO: Get tile data from XML and place it into the objects.
 			}
 			
 			// Get objects of the group

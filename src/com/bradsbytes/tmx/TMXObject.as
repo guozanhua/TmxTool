@@ -1,5 +1,7 @@
 package com.bradsbytes.tmx
 {
+	import flash.display.BitmapData;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import mx.events.PropertyChangeEvent;
@@ -95,6 +97,32 @@ package com.bradsbytes.tmx
 		 */
 		internal function setGroup(group_ : TMXObjectGroup) : void {
 			_group = group_;
+		}
+		
+		/**
+		 * Draw the object onto a BitmapData.
+		 * 
+		 * <p>Objects are drawn differently depending on several factors. If the object has a tile associated
+		 * with it, it is drawn using that tile. The tile will be drawn at the given location, but will be offset upwards
+		 * by a distance equal to the difference between the tile's height and the tile-height of the TMX. This is
+		 * done to be consistent with the .tmx file spec, which says that oversized tiles are drawn from the bottom-left
+		 * corner, rather than the top-left.</p>
+		 * 
+		 * <p>If there is no tile associated with an object but it has a width and height, the tile will draw itself using
+		 * a simple colored rectangle. The color of the rectangle is taken from the color's parent group, and the opacity
+		 * will be the shapeOpacity that was given to the draw method.</p>
+		 * 
+		 * <p>Finally, if the object has no tile and no size, it will be drawn as a circle centered around the given point
+		 * with a diameter equal to the average of the tile-width and tile-height of the TMX. As with the rectangle,
+		 * the color comes from the parent object group and the opacity is that which is given.</p>   
+		 * 
+		 * @param dest The bitmap data onto which the object will be drawn.
+		 * @param destPoint The position within the bitmap at which the object will be drawn.
+		 */
+		public function draw(dest:BitmapData, destPoint:Point, shapeOpacity : Number = 0.0) : void {
+			if (tile !== null) {
+				// TODO: Make things draw!
+			}
 		}
 	}
 

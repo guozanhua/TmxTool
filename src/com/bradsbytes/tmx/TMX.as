@@ -38,7 +38,7 @@ package com.bradsbytes.tmx
 			_layers = new TMXLayersView;
 			_layers.setTmx(this);
 			_properties = new ObjectProxy;
-			_properties.addEventHandler(PropertyChangeEvent.PROPERTY_CHANGE, handlePropertyChanged);
+			_properties.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, handlePropertyChanged);
 		}
 		
 		/**
@@ -92,7 +92,7 @@ package com.bradsbytes.tmx
 		/**
 		 * A proxy to the TMX's properties.
 		 * <p>
-		 * 	Changes to this proxy will trigger calls to the protected method handlePropertyChanged().
+		 * 	TODO: Changes to this proxy will trigger calls to the protected method handlePropertyChanged().
 		 * </p>
 		 */
 		public function get properties() : ObjectProxy {
@@ -106,7 +106,7 @@ package com.bradsbytes.tmx
 		 * </p>
 		 */
 		public function handlePropertyChanged(e:PropertyChangeEvent) : void {
-			// Leave it to the subclasses!
+			 //Leave it to the subclasses!
 		}
 		
 		

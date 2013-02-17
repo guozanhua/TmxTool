@@ -5,6 +5,7 @@
     <classEntry path="com.bradsbytes.tmx.AbstractTMXObject"/>
     <classEntry path="com.bradsbytes.tmx.Encoding"/>
     <classEntry path="com.bradsbytes.tmx.Compression"/>
+    <classEntry path="com.bradsbytes.tmx.BitmapAssetTMXLoader"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -1,10 +1,13 @@
 package com.bradsbytes.tmx
 {
+	import flash.display.BitmapData;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	import flash.utils.Proxy;
 	import flash.utils.flash_proxy;
 	
-	import mx.events.PropertyChangeEvent;
-	import mx.utils.ObjectProxy;
+//	import mx.events.PropertyChangeEvent;
+//	import mx.utils.ObjectProxy;
 
 	/**
 	 * Implements the common parts of TMXTileLayer and TMXObjectGroup.
@@ -18,7 +21,7 @@ package com.bradsbytes.tmx
 		protected var _name : String;
 		protected var _width : uint;
 		protected var _height : uint;
-		protected var _properties : ObjectProxy;
+		protected var _properties : Object;
 		protected var _tmx : TMX = null;
 		
 		public function AbstractTMXLayer(name_ : String, width_ : uint, height_ : uint)
@@ -26,7 +29,8 @@ package com.bradsbytes.tmx
 			_name = name_;
 			_width = width_;
 			_height = height_;
-			_properties = new ObjectProxy;
+			_properties = new Object;
+//			_properties.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, handlePropertyChanged);
 		}
 		
 		/**
@@ -77,19 +81,18 @@ package com.bradsbytes.tmx
 		 * 	Changes to this proxy will trigger calls to the protected method handlePropertyChanged().
 		 * </p>
 		 */
-		public function get properties() : ObjectProxy {
+		public function get properties() : Object {
 			return _properties;
 		}
-		
-		/**
-		 * Handles changes to the layer's properties.
-		 * <p>
-		 * 	This does nothing by default, but subclasses may want to use it.
-		 * </p>
-		 */
-		public function handlePropertyChanged(e:PropertyChangeEvent) : void {
-			// Leave it to the subclasses!
-		}
-		
+//		
+//		/**
+//		 * Handles changes to the layer's properties.
+//		 * <p>
+//		 * 	This does nothing by default, but subclasses may want to use it.
+//		 * </p>
+//		 */
+//		public function handlePropertyChanged(e:PropertyChangeEvent) : void {
+//			// Leave it to the subclasses!
+//		}
 	}
 }
